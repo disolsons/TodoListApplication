@@ -19,8 +19,6 @@ public class TodoList {
     @Enumerated(EnumType.STRING)
     private TodoListStatus status;
 
-    //Using a timestamp allows for flexibility in terms of timezones, which is important given this is a collaborative application.
-    //It can also be used for features such as setting alarms, or reminders.
     private Instant dueDate;
 
     private Instant createdAt;
