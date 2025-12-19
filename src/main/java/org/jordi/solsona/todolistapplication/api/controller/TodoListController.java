@@ -1,4 +1,9 @@
 package org.jordi.solsona.todolistapplication.api.controller;
+import jakarta.validation.Valid;
+import org.jordi.solsona.todolistapplication.api.dto.CreateTodoListRequest;
+import org.jordi.solsona.todolistapplication.api.dto.TodoListResponse;
+import org.jordi.solsona.todolistapplication.api.dto.UpdateTodoListRequest;
+import org.jordi.solsona.todolistapplication.commons.mappers.TodoListMapper;
 import org.jordi.solsona.todolistapplication.domain.model.TodoList;
 import org.jordi.solsona.todolistapplication.domain.model.TodoListStatus;
 import org.jordi.solsona.todolistapplication.service.TodoListService;
@@ -16,23 +21,27 @@ import java.util.UUID;
 public class TodoListController {
 
     private final TodoListService todoListService;
+    private final TodoListMapper mapper;
 
-    public TodoListController(TodoListService todoListService) {
+    public TodoListController(TodoListService todoListService, TodoListMapper mapper) {
         this.todoListService = todoListService;
+        this.mapper = mapper;
     }
 
     @PostMapping
-    public TodoList create(@RequestBody TodoList todoList) {
-        return this.todoListService.createTodoList(todoList);
+    public TodoListResponse create(@RequestBody @Valid CreateTodoListRequest request) {
+        TodoList response = this.todoListService.createTodoList(request);
+        return mapper.toResponse(response);
     }
 
     @GetMapping("/{id}")
-    public TodoList get(@PathVariable UUID id) {
-        return this.todoListService.getTodoListById(id);
+    public TodoListResponse get(@PathVariable UUID id) {
+        TodoList response = this.todoListService.getTodoListById(id);
+        return mapper.toResponse(response);
     }
 
     @GetMapping
-    public Page<TodoList> list(@RequestParam(required = false) TodoListStatus status,
+    public Page<TodoListResponse> list(@RequestParam(required = false) TodoListStatus status,
                                @RequestParam(required = false) Instant dueTime,
                                @RequestParam(defaultValue = "0") int page,
                                @RequestParam(defaultValue = "10") int size,
@@ -40,12 +49,15 @@ public class TodoListController {
                                @RequestParam(defaultValue = "ASC") Sort.Direction orderDirection) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(orderDirection, sortBy));
-        return this.todoListService.list(status, dueTime, pageable);
+        Page<TodoList> todoListPage = todoListService.list(status, dueTime, pageable);
+
+        return todoListPage.map(mapper::toResponse);
     }
 
     @PutMapping
-    public TodoList update(@PathVariable UUID id, @RequestBody TodoList todoList) {
-        return this.todoListService.update(id, todoList);
+    public TodoListResponse update(@PathVariable UUID id, @RequestBody @Valid UpdateTodoListRequest request) {
+        TodoList response =  this.todoListService.update(id, request);
+        return mapper.toResponse(response);
     }
 
     @DeleteMapping("/{id}")
