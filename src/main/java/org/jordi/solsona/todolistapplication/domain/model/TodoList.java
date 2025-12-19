@@ -5,7 +5,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "lists")
+@Table(name = "todo_lists")
 public class TodoList {
 
     @Id
@@ -25,6 +25,16 @@ public class TodoList {
 
     private Instant updatedAt;
 
+    public TodoList(UUID id, String name, String description, TodoListStatus status, Instant dueDate, Instant createdAt, Instant updatedAt) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.dueDate = dueDate;
+    }
+
+    public TodoList() {
+    }
 
     /***
      * Getters and Setters

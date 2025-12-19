@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
+import org.springframework.http.ResponseEntity;
 
 import java.time.Instant;
 import java.util.List;
@@ -52,7 +53,7 @@ public class TodoListControllerTest {
         this.todoList = new TodoList();
         this.todoList.setId(listUUID);
         this.todoList.setName("Test Todo List");
-        this. todoList.setDescription("Test description");
+        this.todoList.setDescription("Test description");
         this.todoList.setDueDate(currentTime);
         this.todoList.setStatus(TodoListStatus.NOT_STARTED);
 
@@ -68,9 +69,9 @@ public class TodoListControllerTest {
         when(this.todoListService.createTodoList(any(CreateTodoListRequest.class))).thenReturn(this.todoList);
         when(this.todoListMapper.toResponse(this.todoList)).thenReturn(this.todoListResponse);
 
-        TodoListResponse result = this.todoListController.create(this.createRequest);
+        ResponseEntity<TodoListResponse> result = this.todoListController.create(this.createRequest);
 
-        assertThat(result).isEqualTo(this.todoListResponse);
+        assertThat(result.getBody()).isEqualTo(this.todoListResponse);
         verify(this.todoListService).createTodoList(any(CreateTodoListRequest.class));
         verify(this.todoListMapper).toResponse(this.todoList);
     }
@@ -80,9 +81,9 @@ public class TodoListControllerTest {
         when(this.todoListService.getTodoListById(any(UUID.class))).thenReturn(this.todoList);
         when(this.todoListMapper.toResponse(this.todoList)).thenReturn(this.todoListResponse);
 
-        TodoListResponse result = this.todoListController.get(this.listUUID);
+        ResponseEntity<TodoListResponse> result = this.todoListController.get(this.listUUID);
 
-        assertThat(result).isEqualTo(this.todoListResponse);
+        assertThat(result.getBody()).isEqualTo(this.todoListResponse);
         verify(this.todoListService).getTodoListById(any(UUID.class));
         verify(this.todoListMapper).toResponse(this.todoList);
     }
@@ -93,9 +94,9 @@ public class TodoListControllerTest {
         Page<TodoList> page = Page.empty(pageable);
         when(this.todoListService.list(any(), any(), eq(pageable))).thenReturn(page);
 
-        Page<TodoListResponse> result = this.todoListController.list(null, null, 0, 10, "dueDate", Sort.Direction.ASC);
+        ResponseEntity<Page<TodoListResponse>> result = this.todoListController.list(null, null, 0, 10, "dueDate", Sort.Direction.ASC);
 
-        assertThat(result.getContent()).isEmpty();
+        assertThat(result.getBody().getContent()).isEmpty();
         verify(this.todoListService).list(any(), any(), eq(pageable));
     }
 
@@ -108,10 +109,10 @@ public class TodoListControllerTest {
         when(this.todoListService.list(any(), any(), any(Pageable.class))).thenReturn(page);
         when(todoListMapper.toResponse(this.todoList)).thenReturn(this.todoListResponse);
 
-        Page<TodoListResponse> result = this.todoListController.list(null, null, 1, 10, "dueDate", Sort.Direction.ASC);
+        ResponseEntity<Page<TodoListResponse>> result = this.todoListController.list(null, null, 1, 10, "dueDate", Sort.Direction.ASC);
 
-        assertThat(result.getContent()).isNotEmpty();
-        assertThat(result.getContent().get(0).name()).isEqualTo("Test Todo List");
+        assertThat(result.getBody().getContent()).isNotEmpty();
+        assertThat(result.getBody().getContent().get(0).name()).isEqualTo("Test Todo List");
         verify(this.todoListService).list(any(), any(), any(Pageable.class));
     }
 
@@ -121,9 +122,9 @@ public class TodoListControllerTest {
         when(this.todoListService.update(any(UUID.class), any(UpdateTodoListRequest.class))).thenReturn(todoList);
         when(this.todoListMapper.toResponse(this.todoList)).thenReturn(this.todoListResponse);
 
-        TodoListResponse result = this.todoListController.update(this.listUUID, this.updateRequest);
+        ResponseEntity<TodoListResponse> result = this.todoListController.update(this.listUUID, this.updateRequest);
 
-        assertThat(result).isEqualTo(this.todoListResponse);
+        assertThat(result.getBody()).isEqualTo(this.todoListResponse);
         verify(this.todoListService).update(any(UUID.class), any(UpdateTodoListRequest.class));
         verify(this.todoListMapper).toResponse(this.todoList);
     }

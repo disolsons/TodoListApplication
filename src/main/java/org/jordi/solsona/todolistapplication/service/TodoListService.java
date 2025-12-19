@@ -31,7 +31,7 @@ public class TodoListService {
 
     /**
      * Creates a new list
-     * @param todoList the {@link TodoList} to be created
+     * @param request the {@link CreateTodoListRequest} to be created
      * @return the created {@link TodoList}
      */
     public TodoList createTodoList(CreateTodoListRequest request) {
