@@ -1,0 +1,265 @@
+{
+	"info": {
+		"_postman_id": "9156ae4e-fef0-4816-a413-3cef3cadd04d",
+		"name": "Todo List API",
+		"description": "Postman collection for TodoListController endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "50956666",
+		"_collection_link": "https://durionhun-858968.postman.co/workspace/Jordi's-Workspace~8712853c-4b75-4c50-8fb4-9b2890870835/collection/50956666-9156ae4e-fef0-4816-a413-3cef3cadd04d?action=share&source=collection_link&creator=50956666"
+	},
+	"item": [
+		{
+			"name": "Create Todo List",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"My Todo List\",\n  \"status\": \"NOT_STARTED\",\n  \"dueDate\": \"1766138400\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/lists",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"lists"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Todo List by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/lists/{{id}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"lists",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Todo List",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Updated Todo List\",\n  \"status\": \"COMPLETED\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/lists/{{id}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"lists",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Todo List",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/lists/{{id}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"lists",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Todos - Default",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/lists",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"lists"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Todos - Filter by Status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/lists?status=NOT_STARTED",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"lists"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "NOT_STARTED"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Todos - Filter by Due Time",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/lists?dueTime=1766138400",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"lists"
+					],
+					"query": [
+						{
+							"key": "dueTime",
+							"value": "1766138400"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Todos - Pagination (page 0, size 5)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/lists?page=0&size=5",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"lists"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Todos - Sort by dueDate DESC",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/lists?sortBy=dueDate&orderDirection=DESC",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"lists"
+					],
+					"query": [
+						{
+							"key": "sortBy",
+							"value": "dueDate"
+						},
+						{
+							"key": "orderDirection",
+							"value": "DESC"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Todos - Status + Sorting",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/lists?status=COMPLETED&sortBy=name&orderDirection=ASC",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"lists"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "COMPLETED"
+						},
+						{
+							"key": "sortBy",
+							"value": "name"
+						},
+						{
+							"key": "orderDirection",
+							"value": "ASC"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		}
+	]
+}
