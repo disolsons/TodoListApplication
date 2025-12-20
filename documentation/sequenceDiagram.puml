@@ -1,0 +1,82 @@
+@startuml
+title Todo List Application – Runtime Sequence Diagram
+
+actor Client
+
+participant "TodoListController\n(@RestController)" as Controller
+participant "TodoListService" as Service
+participant "TodoMapper" as Mapper
+participant "TodoRepository\n(JPA)" as Repository
+database "Database" as DB
+
+== Create Todo List ==
+
+Client -> Controller : POST /api/lists\nCreateTodoRequest
+Controller -> Service : createTodo(request)
+Service -> Mapper : toEntity(request)
+Mapper --> Service : Todo
+Service -> Repository : save(Todo)
+Repository -> DB : INSERT
+DB --> Repository : persisted entity
+Repository --> Service : Todo
+Service -> Mapper : toResponse(Todo)
+Mapper --> Service : TodoResponse
+Service --> Controller : TodoResponse
+Controller --> Client : 201 CREATED\nTodoResponse
+
+== Get Todo List by ID ==
+
+Client -> Controller : GET /api/lists/{id}
+Controller -> Service : getTodoById(id)
+Service -> Repository : findById(id)
+Repository -> DB : SELECT
+DB --> Repository : Todo
+Repository --> Service : Todo
+Service -> Mapper : toResponse(Todo)
+Mapper --> Service : TodoResponse
+Service --> Controller : TodoResponse
+Controller --> Client : 200 OK\nTodoResponse
+
+== List Todo Lists (with filters) ==
+
+Client -> Controller : GET /api/lists?status=&page=&size=&sort
+Controller -> Service : list(status, dueDate, pageable)
+Service -> Repository : findAll(...)
+Repository -> DB : SELECT (paged)
+DB --> Repository : Page<Todo>
+Repository --> Service : Page<Todo>
+Service -> Mapper : map each Todo
+Mapper --> Service : Page<TodoResponse>
+Service --> Controller : Page<TodoResponse>
+Controller --> Client : 200 OK\nJSON Page
+
+== Update Todo List ==
+
+Client -> Controller : PUT /api/lists/{id}\nUpdateTodoRequest
+Controller -> Service : update(id, request)
+Service -> Repository : findById(id)
+Repository -> DB : SELECT
+DB --> Repository : Todo
+Repository --> Service : Todo
+Service -> Mapper : apply updates
+Service -> Repository : save(Todo)
+Repository -> DB : UPDATE
+DB --> Repository : updated entity
+Repository --> Service : Todo
+Service -> Mapper : toResponse(Todo)
+Mapper --> Service : TodoResponse
+Service --> Controller : TodoResponse
+Controller --> Client : 200 OK\nTodoResponse
+
+== Delete Todo List ==
+
+Client -> Controller : DELETE /api/lists/{id}
+Controller -> Service : delete(id)
+Service -> Repository : deleteById(id)
+Repository -> DB : DELETE
+DB --> Repository : ok
+Repository --> Service : void
+Service --> Controller : void
+Controller --> Client : 204 NO CONTENT
+
+@enduml
