@@ -6,11 +6,12 @@ The application requires a postgresql database available. The default values for
     username: postgres
     password: postgres
 ```
-However, these can be modified in the file `application.yaml` to match any other user, password, or db url.
+However, these can be modified in the file `src/main/resources/application.yaml` to match any other user, password, or db url.
 
 
 
 How to run (with Maven CLI):
 
 `mvn clean install`
+
 `mvn spring-boot:run`
