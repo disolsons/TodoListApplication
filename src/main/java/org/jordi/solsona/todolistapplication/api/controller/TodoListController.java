@@ -1,11 +1,11 @@
 package org.jordi.solsona.todolistapplication.api.controller;
 import jakarta.validation.Valid;
-import org.jordi.solsona.todolistapplication.api.dto.CreateTodoListRequest;
-import org.jordi.solsona.todolistapplication.api.dto.TodoListResponse;
-import org.jordi.solsona.todolistapplication.api.dto.UpdateTodoListRequest;
-import org.jordi.solsona.todolistapplication.commons.mappers.TodoListMapper;
-import org.jordi.solsona.todolistapplication.domain.model.TodoList;
-import org.jordi.solsona.todolistapplication.domain.model.TodoListStatus;
+import org.jordi.solsona.todolistapplication.api.dto.CreateTodoRequest;
+import org.jordi.solsona.todolistapplication.api.dto.TodoResponse;
+import org.jordi.solsona.todolistapplication.api.dto.UpdateTodoRequest;
+import org.jordi.solsona.todolistapplication.commons.mappers.TodoMapper;
+import org.jordi.solsona.todolistapplication.domain.model.Todo;
+import org.jordi.solsona.todolistapplication.domain.model.TodoStatus;
 import org.jordi.solsona.todolistapplication.service.TodoListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,24 +24,24 @@ import java.util.UUID;
 public class TodoListController {
 
     private final TodoListService todoListService;
-    private final TodoListMapper mapper;
+    private final TodoMapper mapper;
 
     @Autowired
-    public TodoListController(TodoListService todoListService, TodoListMapper mapper) {
+    public TodoListController(TodoListService todoListService, TodoMapper mapper) {
         this.todoListService = todoListService;
         this.mapper = mapper;
     }
 
     @PostMapping
-    public ResponseEntity<TodoListResponse> create(@RequestBody @Valid CreateTodoListRequest request) {
-        TodoList todoList = this.todoListService.createTodoList(request);
-        TodoListResponse response = this.mapper.toResponse(todoList);
+    public ResponseEntity<TodoResponse> create(@RequestBody @Valid CreateTodoRequest request) {
+        Todo todo = this.todoListService.createTodo(request);
+        TodoResponse response = this.mapper.toResponse(todo);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TodoListResponse> get(@PathVariable UUID id) {
-        TodoList response = this.todoListService.getTodoListById(id);
+    public ResponseEntity<TodoResponse> get(@PathVariable UUID id) {
+        Todo response = this.todoListService.getTodoById(id);
         if (response == null) {
             return ResponseEntity.notFound().build();
         }
@@ -49,22 +49,22 @@ public class TodoListController {
     }
 
     @GetMapping
-    public  ResponseEntity<Page<TodoListResponse>> list(@RequestParam(required = false) TodoListStatus status,
-                               @RequestParam(required = false) Instant dueTime,
-                               @RequestParam(defaultValue = "0") int page,
-                               @RequestParam(defaultValue = "10") int size,
-                               @RequestParam(defaultValue = "dueDate") String sortBy,
-                               @RequestParam(defaultValue = "ASC") Sort.Direction orderDirection) {
+    public  ResponseEntity<Page<TodoResponse>> list(@RequestParam(required = false) TodoStatus status,
+                                                    @RequestParam(required = false) Instant dueTime,
+                                                    @RequestParam(defaultValue = "0") int page,
+                                                    @RequestParam(defaultValue = "10") int size,
+                                                    @RequestParam(defaultValue = "dueDate") String sortBy,
+                                                    @RequestParam(defaultValue = "ASC") Sort.Direction orderDirection) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(orderDirection, sortBy));
-        Page<TodoList> todoListPage = this.todoListService.list(status, dueTime, pageable);
+        Page<Todo> todoListPage = this.todoListService.list(status, dueTime, pageable);
 
         return ResponseEntity.ok(todoListPage.map(this.mapper::toResponse));
     }
 
-    @PutMapping
-    public ResponseEntity<TodoListResponse> update(@PathVariable UUID id, @RequestBody @Valid UpdateTodoListRequest request) {
-        TodoList response =  this.todoListService.update(id, request);
+    @PutMapping("/{id}")
+    public ResponseEntity<TodoResponse> update(@PathVariable UUID id, @RequestBody @Valid UpdateTodoRequest request) {
+        Todo response =  this.todoListService.update(id, request);
         if (response == null) {
             return ResponseEntity.notFound().build();
         }
@@ -72,6 +72,7 @@ public class TodoListController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable UUID id) {
         this.todoListService.delete(id);
     }

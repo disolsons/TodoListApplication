@@ -1,12 +1,12 @@
 package org.jordi.solsona.todolistapplication.service;
 
-import org.jordi.solsona.todolistapplication.api.dto.CreateTodoListRequest;
-import org.jordi.solsona.todolistapplication.api.dto.UpdateTodoListRequest;
-import org.jordi.solsona.todolistapplication.commons.exceptions.ListNotFoundException;
-import org.jordi.solsona.todolistapplication.commons.mappers.TodoListMapper;
-import org.jordi.solsona.todolistapplication.domain.model.TodoList;
-import org.jordi.solsona.todolistapplication.domain.model.TodoListStatus;
-import org.jordi.solsona.todolistapplication.domain.repository.TodoListRepository;
+import org.jordi.solsona.todolistapplication.api.dto.CreateTodoRequest;
+import org.jordi.solsona.todolistapplication.api.dto.UpdateTodoRequest;
+import org.jordi.solsona.todolistapplication.commons.exceptions.TodoNotFoundException;
+import org.jordi.solsona.todolistapplication.commons.mappers.TodoMapper;
+import org.jordi.solsona.todolistapplication.domain.model.Todo;
+import org.jordi.solsona.todolistapplication.domain.model.TodoStatus;
+import org.jordi.solsona.todolistapplication.domain.repository.TodoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,122 +32,122 @@ import static org.mockito.Mockito.*;
 public class TodoListServiceTest {
 
     @Mock
-    private TodoListRepository todoListRepository;
+    private TodoRepository todoRepository;
 
     @InjectMocks
     private TodoListService todoListService;
 
     @Mock
-    private TodoListMapper todoListMapper;
+    private TodoMapper todoMapper;
 
-    private TodoList todoList;
-    private CreateTodoListRequest createRequest;
-    private UpdateTodoListRequest updateRequest;
-    private UUID listUUID = new UUID(0L, 1L);
+    private Todo todo;
+    private CreateTodoRequest createRequest;
+    private UpdateTodoRequest updateRequest;
+    private UUID uuid = new UUID(0L, 1L);
     private Instant currentTime = Instant.now();
 
     @BeforeEach
     public void setUp() {
-        this.todoList = new TodoList();
-        this.todoList.setId(listUUID);
-        this.todoList.setName("testTodoList");
-        this.todoList.setDescription("A description");
-        this.todoList.setDueDate(currentTime);
-        this.todoList.setStatus(TodoListStatus.NOT_STARTED);
+        this.todo = new Todo();
+        this.todo.setId(this.uuid);
+        this.todo.setName("testTodoList");
+        this.todo.setDescription("A description");
+        this.todo.setDueDate(currentTime);
+        this.todo.setStatus(TodoStatus.NOT_STARTED);
 
-        this.createRequest = new CreateTodoListRequest("testTodoList", "A description", currentTime, TodoListStatus.NOT_STARTED);
-        this.updateRequest = new UpdateTodoListRequest("testTodoList", "A description", currentTime, TodoListStatus.IN_PROGRESS);
+        this.createRequest = new CreateTodoRequest("testTodoList", "A description", currentTime, TodoStatus.NOT_STARTED);
+        this.updateRequest = new UpdateTodoRequest("testTodoList", "A description", currentTime, TodoStatus.IN_PROGRESS);
     }
 
     @Test
-    public void getById_todoListExists_returnsTodoList() {
+    public void getById_todoExists_returnsTodoList() {
 
-        when(this.todoListRepository.findById(this.listUUID))
-                .thenReturn(Optional.of(this.todoList));
+        when(this.todoRepository.findById(this.uuid))
+                .thenReturn(Optional.of(this.todo));
 
-        TodoList returnedList = this.todoListService.getTodoListById(this.listUUID);
-        assertThat(returnedList).isSameAs(this.todoList);
-        verify(this.todoListRepository).findById(this.listUUID);
+        Todo returnedList = this.todoListService.getTodoById(this.uuid);
+        assertThat(returnedList).isSameAs(this.todo);
+        verify(this.todoRepository).findById(this.uuid);
     }
 
     @Test
-    public void getById_todoListDoesntExist_throwsException() {
+    public void getById_todoDoesntExist_throwsException() {
 
-        when(this.todoListRepository.findById(this.listUUID))
+        when(this.todoRepository.findById(this.uuid))
                 .thenReturn(Optional.empty());
 
-        assertThrows(ListNotFoundException.class, () -> {
-            this.todoListService.getTodoListById(this.listUUID);
+        assertThrows(TodoNotFoundException.class, () -> {
+            this.todoListService.getTodoById(this.uuid);
         });
-        verify(this.todoListRepository).findById(this.listUUID);
+        verify(this.todoRepository).findById(this.uuid);
     }
 
     @Test
-    public void create_savesAndReturnsTodoList() {
+    public void create_savesAndReturnsTodo() {
 
-        when(this.todoListMapper.toEntity(this.createRequest)).thenReturn(this.todoList);
-        when(this.todoListRepository.save(any(TodoList.class))).thenReturn(this.todoList);
-        TodoList createdList = this.todoListService.createTodoList(this.createRequest);
+        when(this.todoMapper.toEntity(this.createRequest)).thenReturn(this.todo);
+        when(this.todoRepository.save(any(Todo.class))).thenReturn(this.todo);
+        Todo createdList = this.todoListService.createTodo(this.createRequest);
 
-        assertThat(createdList).isSameAs(this.todoList);
-        verify(this.todoListRepository).save(any(TodoList.class));
+        assertThat(createdList).isSameAs(this.todo);
+        verify(this.todoRepository).save(any(Todo.class));
     }
 
     @Test
-    public void update_existingTodoList_udpatesFieldsAndSavesList() {
+    public void update_existingTodo_udpatesFieldsAndSavesList() {
 
-        TodoList updatedList = this.todoList;
-        updatedList.setStatus(TodoListStatus.IN_PROGRESS);
+        Todo updatedList = this.todo;
+        updatedList.setStatus(TodoStatus.IN_PROGRESS);
 
-        when(this.todoListRepository.findById(this.listUUID)).thenReturn(Optional.of(this.todoList));
-        when(this.todoListRepository.save(any(TodoList.class))).thenReturn(updatedList);
+        when(this.todoRepository.findById(this.uuid)).thenReturn(Optional.of(this.todo));
+        when(this.todoRepository.save(any(Todo.class))).thenReturn(updatedList);
 
-        TodoList result = this.todoListService.update(this.listUUID, this.updateRequest);
+        Todo result = this.todoListService.update(this.uuid, this.updateRequest);
 
 
         assertThat(result.getName()).isEqualTo("testTodoList");
         assertThat(result.getDescription()).isEqualTo("A description");
         assertThat(result.getDueDate()).isEqualTo(updatedList.getDueDate());
-        assertThat(result.getStatus()).isEqualTo(TodoListStatus.IN_PROGRESS);
+        assertThat(result.getStatus()).isEqualTo(TodoStatus.IN_PROGRESS);
 
-        verify(this.todoListRepository).save(any(TodoList.class));
+        verify(this.todoRepository).save(any(Todo.class));
     }
 
     @Test
-    public void update_missingTodoList_throwsException() {
+    public void update_missingTodo_throwsException() {
 
-        TodoList updatedList = this.todoList;
-        updatedList.setStatus(TodoListStatus.IN_PROGRESS);
+        Todo updatedList = this.todo;
+        updatedList.setStatus(TodoStatus.IN_PROGRESS);
 
-        when(this.todoListRepository.findById(updatedList.getId()))
+        when(this.todoRepository.findById(updatedList.getId()))
                 .thenReturn(Optional.empty());
 
-        assertThrows(ListNotFoundException.class, () -> {
-            this.todoListService.update(this.listUUID, this.updateRequest);
+        assertThrows(TodoNotFoundException.class, () -> {
+            this.todoListService.update(this.uuid, this.updateRequest);
         });
     }
 
     @Test
-    void delete_missingTodoList_throwsException() {
+    void delete_missingTodo_throwsException() {
 
-        doThrow(new IllegalArgumentException()).when(this.todoListRepository).deleteById(this.listUUID);
-        assertThrows(ListNotFoundException.class, () -> {
-            this.todoListService.delete(this.listUUID);
+        doThrow(new IllegalArgumentException()).when(this.todoRepository).deleteById(this.uuid);
+        assertThrows(TodoNotFoundException.class, () -> {
+            this.todoListService.delete(this.uuid);
         });
     }
 
 
     @Test
-    void list_withFilters_returnsTodoListPage() {
+    void list_withFilters_returnsTodoPage() {
         Pageable pageable = PageRequest.of(0, 10);
-        Page<TodoList> page = new PageImpl<>(List.of(this.todoList), pageable, 1);
+        Page<Todo> page = new PageImpl<>(List.of(this.todo), pageable, 1);
 
-        when(todoListRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(page);
+        when(todoRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(page);
 
-        Page<TodoList> result = todoListService.list(TodoListStatus.NOT_STARTED, null, pageable);
+        Page<Todo> result = todoListService.list(TodoStatus.NOT_STARTED, null, pageable);
 
         assertThat(result.getContent()).hasSize(1);
-        assertThat(result.getContent().get(0)).isSameAs(this.todoList);
+        assertThat(result.getContent().get(0)).isSameAs(this.todo);
     }
 
 

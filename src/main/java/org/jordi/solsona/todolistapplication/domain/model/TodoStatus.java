@@ -1,6 +1,6 @@
 package org.jordi.solsona.todolistapplication.domain.model;
 
-public enum TodoListStatus {
+public enum TodoStatus {
     NOT_STARTED,
     IN_PROGRESS,
     COMPLETED

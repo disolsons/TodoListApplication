@@ -6,7 +6,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "todo_lists")
-public class TodoList {
+public class Todo {
 
     @Id
     @GeneratedValue
@@ -17,7 +17,7 @@ public class TodoList {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    private TodoListStatus status;
+    private TodoStatus status;
 
     private Instant dueDate;
 
@@ -25,7 +25,7 @@ public class TodoList {
 
     private Instant updatedAt;
 
-    public TodoList(UUID id, String name, String description, TodoListStatus status, Instant dueDate, Instant createdAt, Instant updatedAt) {
+    public Todo(UUID id, String name, String description, TodoStatus status, Instant dueDate, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -33,7 +33,7 @@ public class TodoList {
         this.dueDate = dueDate;
     }
 
-    public TodoList() {
+    public Todo() {
     }
 
     /***
@@ -64,11 +64,11 @@ public class TodoList {
         this.description = description;
     }
 
-    public TodoListStatus getStatus() {
+    public TodoStatus getStatus() {
         return status;
     }
 
-    public void setStatus(TodoListStatus status) {
+    public void setStatus(TodoStatus status) {
         this.status = status;
     }
 

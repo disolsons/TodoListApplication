@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.UUID;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class ListNotFoundException extends RuntimeException{
+public class TodoNotFoundException extends RuntimeException{
 
-    public ListNotFoundException(UUID listId) {
+    public TodoNotFoundException(UUID listId) {
         super("List not found with id " + listId.toString());
     }
 }
